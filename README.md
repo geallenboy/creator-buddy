@@ -1,252 +1,169 @@
-<h1 align="center">Creator Buddy</h1>
+# Creator Buddy（gegarron 个人版）
 
 <p align="center"><code>creator-buddy.skill</code></p>
 
-<p align="center"><em>「从一个选题，到一篇能发的成品」</em></p>
+<p align="center"><em>把学习笔记 / 口播，做成能发的短视频</em></p>
 
 <p align="center">
   <img alt="License MIT" src="https://img.shields.io/badge/License-MIT-c8a500?style=for-the-badge">
   <img alt="Agent Skills Standard" src="https://img.shields.io/badge/Agent%20Skills-Standard-5aa524?style=for-the-badge">
   <img alt="skills.sh Compatible" src="https://img.shields.io/badge/skills.sh-Compatible-1888c8?style=for-the-badge">
-  <img alt="Runtime" src="https://img.shields.io/badge/Runtime-Claude%20Code%20%C2%B7%20Codex%20%C2%B7%20Cursor%20%C2%B7%20OpenClaw%20%C2%B7%20Hermes-7b2bd9?style=for-the-badge">
 </p>
 
-<p align="center">
-  公众号 / 小红书 / B站 / 知乎：<strong>空格的键盘</strong> ｜ <a href="mailto:wzfh520@gmail.com">wzfh520@gmail.com</a>
-</p>
+**定位**：给 [gegarron](https://gegarron.com) 自己用的 Agent Skill 箱——把学习笔记、口播素材做成**能发的短视频成品**。  
+**不做**：代发任何平台、账号运营自动化、一键起号。
 
-Creator Buddy 是一套给内容创作者、运营和自媒体作者用的**全栈创作 Skill 工具箱**。
-
-它覆盖三个平台的创作全流程——**公众号、小红书、视频**：从平台情报（搜热点、挖爆款、看评论、拆竞品），到成品产出（起标题、写正文、做配图、剪视频、配音配乐、出封面）。
-
-基于开放的 Agent Skills 协议，可在 Claude Code、Codex、Cursor、OpenClaw、Hermes Agent、CodeBuddy、Workbuddy、Gemini CLI、OpenCode 等兼容 runtime 中运行。
-
-不是让 AI 凭感觉给你编选题，也不是给你一个「一键起号」按钮。
-
-而是先把平台上的真实内容和数据拉回来，再帮你一步步做成能发的东西——**内容永远是你的**。
+- **主阵地**：个人网站 [gegarron.com](https://gegarron.com) / [docs.gegarron.com](https://docs.gegarron.com) + X  
+- **文字稿流水线**：另有「AI自媒体」Bot 负责；本仓库默认主线是**视频 Skills**  
+- **基于**：[SpaceZephyr/creator-buddy](https://github.com/SpaceZephyr/creator-buddy)（MIT）二次开发的薄换皮；原作者权利见 [`LICENSE`](./LICENSE) / [`NOTICE`](./NOTICE)
 
 ---
 
-## 三大板块
+## 默认主线：视频 · `video-Skills`
+
+一条视频从想法到成片，由 `space-video` 总控调度。
+
+### P0 推荐最小闭环（先跑通再加料）
 
 ```text
-gzh-Skills/     公众号   ── 定位装修 · 搜爆款 · 写长短文 · 起标题 · 做封面 · 出配图 · 整篇排版
-xhs-Skills/     小红书   ── 定位 · 选题 · 标题 · 正文 · 封面 · 图文 · 复盘
-video-Skills/   视频     ── 选题 · 脚本 · 剪辑 · B-roll · 字幕 · 配音配乐 · 封面
+space-video  →  space-video-edit  →  space-video-subtitle
+   总控/导演        剪口误（删前保后）      转写 · 断句 · SRT
 ```
 
-### 📰 公众号 · `gzh-Skills`
+P0 **暂不加** B-roll / 配乐；成片够发再说。
 
-从账号定位到写稿、起标题、配图排版。
-
-| Skill | 干什么 |
-|---|---|
-| `gzh-positioning` | **定位**：账号简介 / 关注后回复 / 菜单三件套，带微信字数校验 |
-| `gzh-longform-writer` | **长文**：六种写法路由（访谈/大纲/续写/整合/破题/重写）+ 成稿质检 |
-| `gzh-short-post` | **短文**：≤1000 字纯文字推送，去 AI 腔风格规则 + 输出前自检清单 |
-| `baokuan-article-analysis` | 按赛道/关键词抓公众号爆款，做数据洞察 |
-| `gzh-explosive-content-detector` | 每日爆款收录（低粉高阅读、数据增长中） |
-| `global-content-search` | 全域内容搜索（小红书/B站/抖音关键词、详情、评论） |
-| `baokuan-title-generator` | 科技/AI 领域 10万+ 爆款标题生成、评分、A/B |
-| `space-gzh-cover` | **封面**：2.35:1 头图，内置分享安全区校验与裁切预览 |
-| `space-chart-image` | **配图**：10 类图表（流程/架构/思维导图/SWOT…） |
-| `space-text-logic-diagram` | **配图**：文本逻辑拆解 → 逻辑关系图 |
-| `space-wechat-layout` | **排版**：整篇文章 → 公众号 HTML（一键复制） |
-
-> 三个配图 Skill 都是「用户给内容 → 输出 HTML 或用 Codex/workbuddy 内置出图模型生成图片」。
-
-### 📕 小红书 · `xhs-Skills`
-
-把起号拆成 10 个环节，一个总控串起来。
-
-| Skill | 干什么 |
-|---|---|
-| `space-xhs-buddy` | **总控台**：判断你卡在哪一环，路由并串工作流 |
-| `space-xhs-positioning` | 起号定位：赛道、定位句、人设、内容支柱、冷启动 |
-| `space-xhs-hotspot` | 热点选题：拉高互动笔记、判趋势、爆款共性 |
-| `space-xhs-title` | 爆款标题：15 种小红书方法批量出候选、评分、合规 |
-| `space-xhs-writer` | 笔记正文：7 种笔记类型、标签策略、发布前 14 项体检 |
-| `space-xhs-cover` | 封面：Codex 内置生图，3:4，单张或多版测试 |
-| `xhs-html` | 图文排版：6+ 张 3:4 单文件 HTML，62 种风格 |
-| `space-xhs-image` | AI 信息图：Codex 生图，单图或 6–9 张组图 |
-| `space-xhs-account-audit` | 账号体检：八维打分、竞品对标、卡点定位 |
-| `space-xhs-note-analytics` | 笔记复盘：六层漏斗归因、多篇横向找规律 |
-
-### 🎬 视频 · `video-Skills`
-
-一条视频从想法到成片的流水线，`space-video` 总控调度。
-
-| Skill | 干什么 |
-|---|---|
-| `space-video` | **总控/导演**：判断走哪步、路由子技能、成片后复盘 |
-| `space-video-topic` | 选题：下载参考去水印 · 逐字稿 · 标题 · 正文 |
-| `space-video-transcript` | **链接转字幕**：YouTube/小宇宙/B站/抖音/小红书 → Markdown + SRT，完成后再按需下载源文件 |
-| `space-video-script` | 脚本：去 AI 味口播 + 精确到秒分镜 |
-| `space-video-edit` | 剪辑：剪口播（删前保后 + 风险分层）+ 成片 |
-| `space-video-broll` | B-roll：HTML→确定性 MP4，多风格、Anti-PPT |
-| `space-video-broll-sketch` | B-roll：文章转手绘图解，调 Seedance/libtv 生成 |
-| `space-video-subtitle` | 字幕：转写 · 断句 · AI 校对 · 烧录 |
-| `space-video-audio` | 配音配乐：TTS 旁白 · 找 BGM · 压音混音 |
-| `space-video-cover` | 封面：家族气质 + 平台比例 + 高点击缩略图 |
+| Skill | 干什么 | P0 |
+|---|---|---|
+| `space-video` | **总控/导演**：判断走哪步、路由子技能、成片后复盘 | ✅ |
+| `space-video-edit` | 剪辑：剪口播（删前保后 + 风险分层）+ 成片 | ✅ |
+| `space-video-subtitle` | 字幕：转写 · 断句 · AI 校对 · 烧录 / 出 SRT | ✅ |
+| `space-video-topic` | 选题：下载参考去水印 · 逐字稿 · 标题 · 正文 | 可选 |
+| `space-video-transcript` | 链接转字幕：YouTube/小宇宙/B站/抖音/小红书 → Markdown + SRT | 可选 |
+| `space-video-script` | 脚本：去 AI 味口播 + 精确到秒分镜 | 可选 |
+| `space-video-broll` | B-roll：HTML→确定性 MP4 | 非 P0 |
+| `space-video-broll-sketch` | B-roll：文章转手绘图解 | 非 P0 |
+| `space-video-audio` | 配音配乐：TTS · BGM · 混音 | 非 P0 |
+| `space-video-cover` | 封面：平台比例缩略图 | 可选 |
 
 ---
 
-## 效果示例
+## 非主线（保留，按需用）
 
-**先做情报**——把平台语境还原出来，而不是泛泛「帮我想 10 个选题」：
-
-```text
-用户  ❯ 帮我看看最近 Codex 在小红书上有什么爆款
-
-助手  ❯ 已搜索小红书热门笔记，近 7 天 39 条筛出 10 条高相关：
-        1. 低成本玩转 Claude Code：6w+ 互动
-        2. Codex 写文献综述：1w+ 互动
-        3. 5 分钟安装 Codex：1w+ 互动
-        结论：小红书用户不关心「模型多强」，更关心怎么装、怎么省钱、
-        怎么避坑、普通人能不能用、能不能马上做 PPT/论文/剪视频。
-```
-
-**再做成品**——从选题继续做到能发的东西：
+公众号 / 小红书目录**完整保留**，但不作为本 fork 的默认主线。文字成稿优先走「AI自媒体」Bot；需要平台情报或排版时再进下面的 Skill。
 
 ```text
-用户  ❯ 把这篇文章做成一支手绘图解 B-roll，垫在口播下面
-
-助手  ❯ 已抽取原文 5 张配图 → 拆成 8 帧分镜（放射/流程/结论卡）
-        → 逐帧生成手绘线稿静帧 → 调 Seedance 做「手绘生长」动效
-        → 硬切拼接 + 无人声氛围乐压低 → broll_final.mp4（4:3，48s）
+gzh-Skills/     公众号   ── 非主线：定位 · 搜爆款 · 写长短文 · 标题 · 封面配图 · 排版
+xhs-Skills/     小红书   ── 非主线：定位 · 选题 · 标题 · 正文 · 封面 · 图文 · 复盘
+video-Skills/   视频     ── ★ 默认主线
 ```
+
+### 📰 公众号 · `gzh-Skills`（非主线）
+
+| Skill | 干什么 |
+|---|---|
+| `gzh-positioning` | 账号简介 / 关注后回复 / 菜单三件套 |
+| `gzh-longform-writer` | 长文：六种写法路由 + 成稿质检 |
+| `gzh-short-post` | 短文：≤1000 字纯文字推送 |
+| `baokuan-article-analysis` | 按赛道/关键词抓公众号爆款 |
+| `gzh-explosive-content-detector` | 每日爆款收录 |
+| `global-content-search` | 全域内容搜索（小红书/B站/抖音） |
+| `baokuan-title-generator` | 科技/AI 爆款标题生成、评分、A/B |
+| `space-gzh-cover` | 2.35:1 头图 |
+| `space-chart-image` | 10 类图表配图 |
+| `space-text-logic-diagram` | 文本逻辑拆解 → 关系图 |
+| `space-wechat-layout` | 整篇文章 → 公众号 HTML |
+
+### 📕 小红书 · `xhs-Skills`（非主线）
+
+| Skill | 干什么 |
+|---|---|
+| `space-xhs-buddy` | 总控台：判断卡点、路由工作流 |
+| `space-xhs-positioning` | 起号定位 |
+| `space-xhs-hotspot` | 热点选题 |
+| `space-xhs-title` | 爆款标题 |
+| `space-xhs-writer` | 笔记正文 |
+| `space-xhs-cover` | 封面 3:4 |
+| `xhs-html` | 图文排版 HTML |
+| `space-xhs-image` | AI 信息图 |
+| `space-xhs-account-audit` | 账号体检 |
+| `space-xhs-note-analytics` | 笔记复盘 |
 
 ---
 
 ## 安装
 
-Creator Buddy 基于开放的 Agent Skills 协议，可在任何 skills-compatible 的 AI agent runtime 中运行。
+基于开放的 Agent Skills 协议，可在 Claude Code、Codex、Cursor 等兼容 runtime 中运行。
 
-### 方式一：一行命令（推荐，跨 runtime）
-
-打开你正在用的 agent，告诉它：
-
-```text
-帮我安装这个 skill：https://github.com/SpaceZephyr/creator-buddy
-```
-
-或者用通用 CLI 安装器（vercel-labs/skills，支持多 runtime）：
+### 方式一：一行命令（推荐）
 
 ```bash
-npx skills add SpaceZephyr/creator-buddy
+npx skills add geallenboy/creator-buddy
 ```
 
-它会自动识别当前 runtime 并放到正确目录。需要指定时加 `-a codex` / `-a claude-code` / `-a cursor`。
+需要指定 runtime 时加 `-a codex` / `-a claude-code` / `-a cursor`。
+
+或告诉 agent：
+
+```text
+帮我安装这个 skill：https://github.com/geallenboy/creator-buddy
+```
 
 ### 方式二：手动安装
 
-克隆仓库，把需要的 skill 目录复制到你的 runtime skills 目录：
-
 ```bash
-git clone https://github.com/SpaceZephyr/creator-buddy.git
+git clone https://github.com/geallenboy/creator-buddy.git
 ```
 
-仓库结构：
+把需要的 skill 目录复制到你的 runtime skills 目录。每个子目录是一份独立 `SKILL.md`（+ 可选脚本/references）。
 
-```text
-gzh-Skills/       公众号：定位装修 + 搜索分析 + 长短文写作 + 标题 + 封面配图
-xhs-Skills/       小红书：起号全流程（10 个 Skill）
-video-Skills/     视频创作：选题→脚本→剪辑→B-roll→字幕→配音→封面
-```
+### 方式三：当参考资料
 
-每个子目录都是一个独立 Skill（一份 `SKILL.md` + 可选脚本/references）。
-
-### 方式三：作为参考资料使用
-
-即使 runtime 不支持自动加载，也可以直接打开对应目录的 `SKILL.md`，把内容粘贴进对话。
+直接打开对应目录的 `SKILL.md`，粘贴进对话即可。
 
 ---
 
-## 使用
+## 使用（P0 视频闭环示例）
 
-装好后，直接用自然语言告诉 agent：
+```text
+用 space-video 帮我把这段口播做成能发的短视频
+先剪口误，再出 SRT 字幕；先不要 B-roll 和配乐
+```
+
+其他仍可用的自然语言（非主线）：
 
 ```text
 帮我搜一下小红书最近 Codex 的热门笔记
 查一下公众号里 AI Agent 相关爆款
-这篇文章帮我起 10 个爆款标题，标好方法和风险
-把这段内容做成公众号配图
-帮我把这条口播视频从头做到发：选题、脚本、剪辑、字幕、配乐、封面
-把这个 YouTube / 小宇宙 / B站 / 抖音 / 小红书链接提取成字幕
-给这篇文章做一支手绘图解 B-roll
-```
-
-也可以手动运行脚本，例如公众号赛道分析：
-
-```bash
-python3 gzh-Skills/baokuan-article-analysis/scripts/daily_sector_trends.py \
-  --sector "AI Coding=Codex,Claude Code,AI编程" --days 7 --output-dir ./reports
+把这个 YouTube / 小宇宙 / B站链接提取成字幕
 ```
 
 ---
 
-## 工作原理
+## 风控与诚实边界
 
-Creator Buddy 不是一个单一爬虫，而是一组内容创作 Skill，分两半：
+本 fork 继承上游定位：**公开内容研究与创作辅助，不是账号自动化工具**。
 
-| 半 | 做什么 |
-|---|---|
-| **情报** | 通过 Redfox、Agent Reach、OpenCLI、bili-cli、公开 API 等读取公开内容 → 去重排序评分 → 出结构化报告 → 让 Agent 提炼选题方向 |
-| **产出** | 把选题继续做成标题、正文、配图、排版、视频、字幕、配乐、封面。配图/视频优先用 Codex/workbuddy 内置出图模型或本地确定性渲染 |
-
-其中 `global-content-search` 的访问顺序是 Agent Reach 优先、Guaikei API 兜底（小红书需 `GUAIKEI_API_TOKEN`；B站走 `bili-cli`/公开 API；抖音预留 `DOUYIN_COMMAND` 只读 CLI）。
-
----
-
-## 适合谁
-
-- **公众号作者**：做账号定位、找近期爆款、判断方向、写长文短文、起标题、做封面、出配图、整篇排版
-- **小红书运营**：定位、选题、写笔记、做封面图文、账号体检与复盘
-- **视频/口播创作者**：选题脚本、剪口播、B-roll 动效、字幕配乐封面
-- **自媒体 / 增长团队**：跨平台监控内容趋势、拆爆款、还原用户语境
-
----
-
-## 风控与安全性说明
-
-Creator Buddy 的定位是公开内容研究与创作辅助，不是账号自动化工具。
-
-- **只读公开数据**：默认只读公开页面、公开 API、只读 CLI 或你本机已授权的只读工具。
-- **不做账号动作**：不发帖、点赞、收藏、评论、关注、私信、批量加好友。
-- **不绕过限制**：不绕登录、验证码、权限校验、付费墙、平台风控或反爬。
-- **凭据不入库**：`GUAIKEI_API_TOKEN`、各类 API Key、Cookie、登录态、`.env`、带 token 的链接都不提交到仓库。
-- **本地优先**：需要登录态的访问只在本机工具链完成；配图/视频的出图 Key 也走本地环境变量。
-- **低频使用**：评论、详情页、批量搜索易触发限制，建议小批量、低并发、按需采样。
-- **分享前脱敏**：公开报告前移除 `xsec_token`、Cookie、邮箱、手机号、后台链接。
-
----
-
-## 诚实边界
-
-每个创作工具都应该说明自己做不到什么。
-
-- **不是实时后台数据**：平台数据来自公开页面、第三方数据源或入库快照。
-- **不替你做账号运营**：不做发帖等写操作，不承诺绕过验证码或风控。
-- **热门不等于适合你**：爆款只说明平台上什么在传播，不能替代你的定位判断。
-- **AI 出图有上限**：生成式配图/视频可能出错别字或画面瑕疵，交付前需人工检查。
-- **小红书受 `xsec_token` 影响**：详情页通常需用搜索结果返回的完整 URL。
-- **抖音当前是扩展入口**：仓库只提供接口，需你接入本地只读 CLI。
-
-一个不告诉你边界在哪的创作工具，不值得信任。
+- **不代发**：不发帖、点赞、收藏、评论、关注、私信。
+- **不绕过限制**：不绕登录、验证码、付费墙、平台风控。
+- **凭据不入库**：API Key、Cookie、登录态、`.env` 都不提交。
+- **热门 ≠ 适合你**：爆款只说明平台在传播什么，不能替代定位判断。
+- **AI 出图/成片有上限**：交付前需人工检查。
 
 ---
 
 ## 参考与致谢
 
-平台访问、创作方法论和视频/配图能力参考了以下项目：
+本仓库基于 [SpaceZephyr/creator-buddy](https://github.com/SpaceZephyr/creator-buddy)（MIT）。上游 README 列出的主要参考：
 
-- [Agent Reach](https://github.com/Panniantong/Agent-Reach)：Agent 操作浏览器/本地环境访问平台内容
-- [xiaohongshu-openclaw-skill](https://github.com/um-why/xiaohongshu-openclaw-skill)：小红书搜索、详情、评论工作流
-- [SpaceZephyr/design-buddy](https://github.com/SpaceZephyr/design-buddy)：`gzh-Skills` 三个配图 Skill 的原型（图表/逻辑图/公众号排版）
-- [HyperFrames](https://github.com/heygen-com/hyperframes)：视频 B-roll 的 HTML→确定性 MP4 渲染思路
-- 火山引擎 **Seedance 2.0**（火山方舟 Ark）与 **libtv Agent**：生成式 B-roll 的视频模型通道
-- Pluviobyte/rnskill 与 chengfeng-videocut：口播剪辑「删前保后 / 风险分层」等方法论
+- [Agent Reach](https://github.com/Panniantong/Agent-Reach)
+- [xiaohongshu-openclaw-skill](https://github.com/um-why/xiaohongshu-openclaw-skill)
+- [SpaceZephyr/design-buddy](https://github.com/SpaceZephyr/design-buddy)
+- [HyperFrames](https://github.com/heygen-com/hyperframes)
+- 火山引擎 **Seedance 2.0**（火山方舟 Ark）与 **libtv Agent**
+- Pluviobyte/rnskill 与 chengfeng-videocut（口播剪辑方法论）
+
+详见 [`NOTICE`](./NOTICE)。
 
 ## 许可证
 
-MIT
+[MIT](./LICENSE)

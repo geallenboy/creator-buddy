@@ -1,0 +1,32 @@
+NOTICE
+======
+
+This repository is a personal fork / thin rebrand of:
+
+  https://github.com/SpaceZephyr/creator-buddy
+
+Original project: Creator Buddy by SpaceZephyr (「空格的键盘」).
+Upstream license: MIT (as stated in the upstream README; this fork adds an
+explicit LICENSE file because upstream main had none at the time of forking).
+
+All original author rights are reserved under the MIT License. This fork does
+not claim ownership of upstream code, Skill designs, or methodology.
+
+Fork maintainer: geallenboy / gegarron
+Fork purpose: personal Agent Skill box for turning learning notes and 口播
+into publishable short videos. Not a competing product, not account-ops
+automation, and not posting on anyone's behalf.
+
+Major references acknowledged by upstream (and retained here):
+
+  - Agent Reach — https://github.com/Panniantong/Agent-Reach
+  - xiaohongshu-openclaw-skill — https://github.com/um-why/xiaohongshu-openclaw-skill
+  - SpaceZephyr/design-buddy — https://github.com/SpaceZephyr/design-buddy
+  - HyperFrames — https://github.com/heygen-com/hyperframes
+  - 火山引擎 Seedance 2.0 (火山方舟 Ark) and libtv Agent
+  - Pluviobyte/rnskill and chengfeng-videocut (口播剪辑方法论)
+
+Contact for this fork: use the GitHub repo issues on geallenboy/creator-buddy.
+Upstream author contact from the original README has been removed from this
+fork's README on purpose; please refer to SpaceZephyr/creator-buddy for
+upstream support.

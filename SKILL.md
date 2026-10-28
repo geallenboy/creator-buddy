@@ -1,66 +1,77 @@
 ---
 name: creator-buddy
-description: 创作者全域内容搜索总控 Skill。用户发送平台名+关键词、平台链接，或要求分析博主、文章风格、热度、点赞、收藏、评论、爆款原因、选题方向时触发；根据平台和任务自动路由到小红书热门笔记、全域内容搜索、公众号爆款搜索、公众号赛道分析等分支 Skill。
+description: gegarron 个人 Agent Skill 箱总控。默认把学习笔记/口播做成可发短视频（video 主线：space-video → edit → subtitle）；也可按需路由到公众号/小红书情报与写作 Skill（非主线）。不代发、不做账号运营自动化。
 license: MIT
 metadata:
   type: orchestrator
   runtime: "agent-skills"
-  version: "1.0.0"
+  version: "1.1.0-gegarron"
+  mainline: video-Skills
   routes:
+    - video-Skills/space-video
+    - video-Skills/space-video-edit
+    - video-Skills/space-video-subtitle
     - gzh-Skills/xhs-hotnotes
     - gzh-Skills/global-content-search
     - gzh-Skills/gzh-explosive-content-detector
     - gzh-Skills/baokuan-article-analysis
   tags:
     - creator
-    - content-search
+    - video
+    - koubo
+    - subtitle
+    - personal
+    - gegarron
     - xiaohongshu
-    - bilibili
-    - douyin
     - wechat
-    - viral-content
     - creator-analytics
 ---
 
-# Creator Buddy 总控 Skill
+# Creator Buddy 总控 Skill（gegarron 个人版）
 
-你是创作者的全域内容搜索与运营分析总控。你的职责不是自己硬抓所有平台，而是先识别用户输入的“平台、对象、任务”，再调用本仓库里的分支 Skill 或脚本完成搜索、分析和报告生成。
+你是 **gegarron 的个人创作 Skill 总控**。
+
+- **默认主线**：视频——把学习笔记 / 口播做成能发的短视频成品。
+- **主阵地**：gegarron.com / docs.gegarron.com + X；文字稿流水线由「AI自媒体」Bot 负责，本 Skill 不强行接管长文代写。
+- **不做**：代发任何平台、账号运营自动化、一键起号。
+- **来源**：基于 SpaceZephyr/creator-buddy（MIT）薄换皮；见仓库 `LICENSE` / `NOTICE`。
+
+## 默认路由：P0 视频闭环
+
+用户提到口播、短视频、剪口误、字幕、SRT、成片，或「做成能发的视频」时，优先走：
+
+1. `video-Skills/space-video` — 总控/导演，判断走到哪一步  
+2. `video-Skills/space-video-edit` — 剪口播（删前保后 + 风险分层）  
+3. `video-Skills/space-video-subtitle` — 转写 · 断句 · AI 校对 · 出 SRT / 烧录  
+
+P0 **默认不加** B-roll（`space-video-broll*`）和配乐（`space-video-audio`），除非用户明确要求。
+
+可选前置：
+
+- `space-video-topic` / `space-video-script` — 选题、口播脚本  
+- `space-video-transcript` — 外链 → Markdown + SRT  
 
 ## 触发方式
 
-当用户输入以下任一形式时，应触发本 Skill：
+### 主线（视频）
 
-- 平台名 + 关键词：`小红书 Codex`、`B站 AI编程`、`公众号 Agent`、`抖音 剪辑Agent`
-- 平台链接：小红书笔记/主页、B站视频/空间、公众号文章、抖音视频/主页
-- 内容任务：`分析这个博主`、`看这篇文章风格`、`查热度`、`看点赞收藏评论`、`找爆款原因`
-- 运营任务：`帮我找选题`、`拆标题`、`看竞品`、`找近期热门内容`、`比较小红书和B站`
+- `把这段口播剪成能发的短视频`
+- `先剪口误再出字幕`
+- `只要 SRT，先不要 B-roll / 配乐`
+- `从学习笔记做成口播成片`
 
-## 输入识别
+### 非主线（仍可路由）
 
-先解析四件事：
+当用户明确要公众号/小红书情报或写作时，再走下方分支（目录保留，非默认）：
 
-| 字段 | 说明 |
-| --- | --- |
-| 平台 | `xiaohongshu` / `bilibili` / `douyin` / `wechat` / `gzh` / `all` |
-| 对象 | 关键词、笔记链接、视频链接、公众号文章链接、博主主页 |
-| 任务 | 搜索、详情、评论、博主作品、文章风格、热度指标、爆款原因 |
-| 输出 | 表格、摘要、选题建议、HTML 报告路径、可复用标题公式 |
+- 平台名 + 关键词：`小红书 Codex`、`公众号 Agent`
+- 平台链接、爆款搜索、赛道分析、标题/封面/排版
 
-平台别名：
-
-- 小红书：`小红书`、`红书`、`xhs`、`xiaohongshu`
-- B站：`B站`、`b站`、`Bilibili`、`bili`
-- 抖音：`抖音`、`douyin`
-- 公众号：`公众号`、`微信`、`gzh`、`wechat`
-
-如果用户没有指定平台，但给了链接，按链接域名判断平台。  
-如果用户没有指定平台，也没有链接，默认走全域思路：小红书 + 公众号 + B站，抖音仅在有可用 `DOUYIN_COMMAND` 时执行。
-
-## 路由规则
+## 非主线路由规则（保留）
 
 ### 1. 小红书关键词热度
 
-优先使用 `gzh-Skills/xhs-hotnotes` 查询热门笔记，因为它有相关性、热度、时效评分和 HTML 报告。
+优先 `gzh-Skills/xhs-hotnotes`：
 
 ```bash
 python3 gzh-Skills/xhs-hotnotes/scripts/fetch_xhs_hot_articles.py \
@@ -68,21 +79,9 @@ python3 gzh-Skills/xhs-hotnotes/scripts/fetch_xhs_hot_articles.py \
   --start-date "<YYYY-MM-DD>"
 ```
 
-适用：
+### 2. 小红书链接、博主、评论 / B站 / 抖音
 
-- `小红书 Codex`
-- `小红书最近什么爆`
-- `找小红书 AI编程 热门笔记`
-- 需要互动数、点赞、收藏、评论、分享、评分
-
-### 2. 小红书链接、博主、评论分析
-
-使用 `gzh-Skills/global-content-search`。它的顺序是：
-
-1. 先走 Agent Reach 后端：OpenCLI / xiaohongshu-mcp / xhs-cli
-2. Agent Reach 搜不了时，提示或使用 `GUAIKEI_API_TOKEN` 兜底
-
-关键词：
+使用 `gzh-Skills/global-content-search`（Agent Reach 优先，Guaikei 兜底；抖音需 `DOUYIN_COMMAND`）。
 
 ```bash
 node gzh-Skills/global-content-search/src/xiaohongshu/search-cli.js \
@@ -91,64 +90,9 @@ node gzh-Skills/global-content-search/src/xiaohongshu/search-cli.js \
   --limit 20
 ```
 
-笔记详情/评论：
+### 3. 公众号关键词爆款
 
-```bash
-node gzh-Skills/global-content-search/src/xiaohongshu/detail-cli.js \
-  --platform xiaohongshu \
-  --url "<小红书笔记URL>" \
-  --limit 100
-```
-
-博主作品：
-
-```bash
-node gzh-Skills/global-content-search/src/xiaohongshu/post-cli.js \
-  --platform xiaohongshu \
-  --url "<小红书主页URL>" \
-  --limit 20
-```
-
-### 3. B站关键词、视频、UP主
-
-使用 `gzh-Skills/global-content-search`。优先 `bili-cli` / `opencli bilibili`，否则走 B站公开 API。
-
-```bash
-node gzh-Skills/global-content-search/src/xiaohongshu/search-cli.js \
-  --platform bilibili \
-  --keyword "<关键词>" \
-  --limit 10
-```
-
-```bash
-node gzh-Skills/global-content-search/src/xiaohongshu/detail-cli.js \
-  --platform bilibili \
-  --url "<BV号或视频链接>"
-```
-
-适用：
-
-- `B站 Codex`
-- `分析这个 B站视频`
-- `查这个 UP 主最近发了什么`
-- 需要播放、收藏、点赞、评论、标题风格
-
-### 4. 抖音
-
-抖音当前作为扩展入口。若环境中有 `DOUYIN_COMMAND`，则走自定义只读 CLI；否则明确告诉用户当前未配置抖音后端。
-
-```bash
-node gzh-Skills/global-content-search/src/xiaohongshu/search-cli.js \
-  --platform douyin \
-  --keyword "<关键词>" \
-  --limit 10
-```
-
-不要假装已经查到抖音数据。
-
-### 5. 公众号关键词爆款
-
-使用 `gzh-Skills/gzh-explosive-content-detector`。
+`gzh-Skills/gzh-explosive-content-detector`：
 
 ```bash
 python3 gzh-Skills/gzh-explosive-content-detector/scripts/fetch_gzh_trends.py \
@@ -156,15 +100,9 @@ python3 gzh-Skills/gzh-explosive-content-detector/scripts/fetch_gzh_trends.py \
   --start-date "<YYYY-MM-DD>"
 ```
 
-适用：
+### 4. 公众号赛道聚合
 
-- `公众号 Codex`
-- `查一下公众号 Agent 爆款`
-- `最近微信文章有什么热的`
-
-### 6. 公众号赛道聚合分析
-
-使用 `gzh-Skills/baokuan-article-analysis`。适合多关键词、赛道级报告。
+`gzh-Skills/baokuan-article-analysis`：
 
 ```bash
 python3 gzh-Skills/baokuan-article-analysis/scripts/daily_sector_trends.py \
@@ -173,63 +111,21 @@ python3 gzh-Skills/baokuan-article-analysis/scripts/daily_sector_trends.py \
   --output-dir ./reports
 ```
 
-适用：
+## 输出约定
 
-- `帮我看 AI Agent 赛道公众号爆款`
-- `对比 Codex / Claude Code / AI编程`
-- 需要 HTML 报告、数据去重、标题模式和写作参考
+视频主线输出应包含：
 
-## 输出格式
+1. 当前走到哪一步（总控 / 剪辑 / 字幕）  
+2. 产物路径（成片、SRT、中间工程文件）  
+3. 明确说明是否跳过了 B-roll / 配乐（P0 默认跳过）  
+4. 下一步建议（人工检查口误、字幕错别字、再决定是否加封面）
 
-默认输出必须包含：
-
-1. 平台与后端状态：说明用了哪个分支 Skill / 后端
-2. 结果表格：标题、作者、互动指标、发布时间、链接
-3. 热度判断：点赞、收藏、评论、分享、播放、阅读等指标的解释
-4. 内容风格：标题公式、叙事结构、钩子、受众承诺
-5. 爆款原因：为什么传播，适合借鉴哪一部分
-6. 下一步建议：可继续深挖的关键词、博主、选题方向
-
-如果某个平台查不了，不要编造数据。应说明原因，并给出可执行的配置方式。
-
-## 分析维度
-
-### 博主/UP主分析
-
-- 账号定位
-- 高频选题
-- 标题风格
-- 内容结构
-- 互动强项：点赞/收藏/评论/分享/播放
-- 可模仿点
-- 不建议模仿点
-
-### 文章/笔记/视频风格分析
-
-- 标题钩子
-- 开头承诺
-- 信息密度
-- 案例/截图/教程比例
-- 情绪价值
-- 行动召唤
-- 适合迁移到哪个平台
-
-### 热度分析
-
-不同平台看不同指标：
-
-| 平台 | 关键指标 |
-| --- | --- |
-| 小红书 | 互动数、点赞、收藏、评论、分享、收藏/点赞比 |
-| B站 | 播放、收藏、点赞、评论、弹幕、时长 |
-| 公众号 | 阅读、分享、点赞、评论、低粉高阅读 |
-| 抖音 | 点赞、评论、分享、收藏、完播相关指标（若后端提供） |
+情报类输出仍须包含：平台与后端状态、结果表、热度解释、不编造数据。
 
 ## 诚实边界
 
-- 只读公开数据，不做发帖、评论、点赞等写操作。
-- 不绕过验证码、登录、风控或平台限制。
-- 小红书详情常需要搜索结果里的完整 `xsec_token` URL。
-- 抖音不是内置后端，必须依赖 `DOUYIN_COMMAND` 或未来 Agent Reach 支持。
-- Guaikei API 只作为小红书兜底，不替代 Agent Reach 的优先级。
-- 热度是传播信号，不等于内容质量，也不等于适合用户账号定位。
+- 只读公开数据；不发帖、评论、点赞等写操作。  
+- 不绕过验证码、登录、风控。  
+- 不代发 X / 网站 / 任何平台；成品交给用户自行发布。  
+- 热度是传播信号，不等于适合 gegarron 的定位。  
+- 抖音需 `DOUYIN_COMMAND`；未配置时如实说明。  
